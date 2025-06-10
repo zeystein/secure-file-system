@@ -1,0 +1,2 @@
+Bu bir test dosyasidir.
+Proje icin ornek veri icerir.
