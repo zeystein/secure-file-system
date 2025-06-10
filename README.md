@@ -1,141 +1,133 @@
-Advanced Secure File Transfer System: Encryption, Low-Level IP Processing & Network Performance Analysis
-Genel Bakış
-Bu proje, ağ güvenliği ve ağ performansı prensiplerini uygulayarak güvenli ve performanslı bir dosya transfer sistemi geliştirmeyi hedeflemektedir. Sistem, hassas verilerin güvenli bir şekilde aktarılmasını sağlamak için gelişmiş şifreleme algoritmalarını (AES ve RSA) ve veri bütünlüğü doğrulaması için SHA-256 hash fonksiyonunu kullanmaktadır. Ayrıca, düşük seviye IP paket işleme yetenekleri (Scapy ile özelleştirilmiş IP başlıkları) ve kapsamlı ağ performans analizleri (Wireshark, iPerf3 ve ping araçlarıyla) bu projenin temel bileşenleridir.
+# Advanced Secure File Transfer System
 
-Özellikler
-1. Dosya Transfer Sistemi
-Kontrol Kanalı (TCP): AES anahtarının paylaşımı, veri hash doğrulaması ve şifreli veri uzunluğunun iletilmesi için güvenilir TCP protokolü kullanılır.
+## Overview
 
-Veri Kanalı (Raw IP): Şifreli veriler, Scapy kütüphanesi aracılığıyla özelleştirilmiş IP başlıkları (TTL, Flags) kullanılarak düşük seviye "raw IP" paketleri halinde, parçalı olarak gönderilir.
+This project implements a secure and high-performance file transfer system, applying network security and performance principles. It features advanced encryption algorithms (AES and RSA), data integrity verification (SHA-256), low-level IP packet processing using Scapy, and extensive network performance analysis with Wireshark, iPerf3, and ping tools.
 
-2. Güvenlik Mekanizmaları
-Asimetrik Şifreleme (RSA-2048): Oturum anahtarı olan AES anahtarının güvenli bir şekilde iletilmesi için RSA-2048 algoritmasıyla anahtar çifti oluşturulur ve açık anahtar ile şifreleme yapılır.
+## Features
 
-Simetrik Şifreleme (AES-256-CBC): Gönderilecek dosya içeriği, güçlü AES-256-CBC algoritması kullanılarak şifrelenir.
+### 1. File Transfer System
 
-Veri Bütünlüğü (SHA-256): Transfer edilen dosyanın bütünlüğü, SHA-256 hash fonksiyonu kullanılarak doğrulanır. Bu, verinin iletim sırasında herhangi bir değişikliğe uğramadığını garanti eder.
+* **Control Channel (TCP)**: Reliable TCP connection for AES key distribution, encrypted data length transfer, and hash verification.
+* **Data Channel (Raw IP)**: Encrypted data sent in fragments as custom IP packets using Scapy (with custom headers like TTL and Flags).
 
-3. Düşük Seviye IP Başlık İşleme
-Scapy Entegrasyonu: Scapy kütüphanesi kullanılarak IP paketlerinin TTL (Time To Live), Flags (DF - Don't Fragment bit) ve checksum değerleri manuel olarak ayarlanır ve yönetilir.
+### 2. Security Mechanisms
 
-Parçalama ve Yeniden Birleştirme Simülasyonu: Veriler, belirli bir fragment_size değerine göre parçalanır ve sunucu tarafında bu parçalar toplanarak yeniden birleştirilir.
+* **Asymmetric Encryption (RSA-2048)**: Secure RSA-2048 key-pair generation for securely transferring AES session keys.
+* **Symmetric Encryption (AES-256-CBC)**: Secure file content encryption with AES-256-CBC.
+* **Data Integrity (SHA-256)**: Verification of file integrity using SHA-256 hashing.
 
-4. Ağ Performans Ölçümleri
-Gecikme (RTT) Analizi: ping komutu ile ağ gecikmesi (Round Trip Time) ölçümleri yapılmıştır. Ortalama RTT süresi ve paket kaybı raporlanmıştır.
+### 3. Low-Level IP Header Processing
 
-Bant Genişliği Analizi (iPerf3): iPerf3 aracı kullanılarak localhost ve gerçek Wi-Fi arayüzü üzerinde bant genişliği testleri gerçekleştirilmiştir. MacOS Network Link Conditioner gibi araçlarla zayıf ağ koşulları simüle edilmiştir.
+* **Scapy Integration**: Manual adjustment and management of IP headers, including TTL, Flags (DF bit), and checksums.
+* **Fragmentation & Reassembly**: Data fragmentation based on a defined `fragment_size` and reassembly on the server.
 
-Paket Analizi (Wireshark): Gönderilen IP paketleri Wireshark ile yakalanmış, "MYFILE" imzasıyla filtrelenmiş ve şifrelenmiş verinin okunamaz olduğu doğrulanmıştır.
+### 4. Network Performance Analysis
 
-Kurulum ve Çalıştırma
-Bağımlılıklar
-Bu projeyi çalıştırmak için aşağıdaki Python kütüphanelerine ve sistem araçlarına ihtiyacınız olacaktır:
+* **Latency (RTT)**: Round Trip Time measured using `ping`; reporting average RTT and packet loss.
+* **Bandwidth Analysis**: Tested bandwidth using `iPerf3` under localhost and Wi-Fi conditions, including network conditions simulation via MacOS Network Link Conditioner.
+* **Packet Analysis (Wireshark)**: IP packets captured and verified for encryption effectiveness.
 
-Python 3.x
+## Installation
 
-cryptography: pip install cryptography
+### Dependencies
 
-scapy: pip install scapy
+* Python 3.x
+* Cryptography: `pip install cryptography`
+* Scapy: `pip install scapy`
+* hashlib (built-in)
+* iPerf3 (network performance analysis)
+* Wireshark (packet analysis)
+* ping utility
+* Optional for MacOS: Network Link Conditioner
 
-hashlib (Dahili Python modülü)
+### Project Structure
 
-iPerf3 (Ağ performans analizi için)
-
-Wireshark (Paket analizi için)
-
-ping (Ağ gecikmesi testi için)
-
-MacOS kullanıcıları için isteğe bağlı: Network Link Conditioner (Ağ koşulu simülasyonu için Apple Developer Tools ile birlikte gelir).
-
-Proje Yapısı
+```
 .
 ├── client.py
 ├── server.py
 ├── testfile.txt
-├── server_public.pem (sunucu ilk çalıştığında otomatik oluşur)
-└── received_file.txt (sunucu tarafından alındığında oluşur)
+├── server_public.pem (auto-generated)
+└── received_file.txt (created upon successful transfer)
+```
 
-Adımlar
-Gerekli Kütüphaneleri Kurun:
+## Setup and Execution
 
+1. **Install Required Libraries**:
+
+```sh
 pip install cryptography scapy
+```
 
-testfile.txt Oluşturun:
-Göndermek istediğiniz içeriği içeren bir testfile.txt dosyası oluşturun veya mevcut testfile.txt dosyasını kullanın.
+2. **Prepare Test File (`testfile.txt`)**:
 
+```
 Bu bir test dosyasidir.
 Proje icin ornek veri icerir.
+```
 
-Sunucuyu Başlatın:
-server.py dosyasını çalıştırın. Bu, sunucunun RSA anahtar çiftini oluşturmasını ve server_public.pem dosyasını kaydetmesini sağlayacaktır. Ayrıca TCP bağlantılarını dinlemeye başlayacak ve ardından IP paketlerini yakalamak için hazır olacaktır.
+3. **Start the Server**:
 
+```sh
 python server.py
+```
 
-Not: Sunucuyu ilk kez çalıştırdığınızda server_public.pem dosyası otomatik olarak oluşturulacaktır.
+*Note*: The server generates `server_public.pem` upon the first execution.
 
-client.py Dosyasını Güncelleyin:
-client.py dosyasını açın ve server_ip değişkenini sunucunun IP adresiyle güncelleyin. Örneğin:
+4. **Configure Client (`client.py`)**:
+   Update `server_ip` variable:
 
-server_ip = "192.168.1.97" # Buraya sunucunun IP adresini yazın
+```python
+server_ip = "192.168.1.97"  # Replace with server IP
+```
 
-İstemciyi Başlatın:
-Sunucu çalışır durumdayken, ayrı bir terminalde client.py dosyasını çalıştırın. Bu, şifrelenmiş veriyi ve anahtarları sunucuya gönderecektir.
+5. **Run Client**:
 
+```sh
 python client.py
+```
 
-Kullanım
-İstemci (client.py), testfile.txt dosyasını şifreler, hash'ini hesaplar ve RSA ile şifrelenmiş AES anahtarını TCP üzerinden sunucuya gönderir.
+## Usage Flow
 
-Ardından şifreli veri, Scapy kullanılarak düşük seviyeli IP paketleri olarak gönderilir.
+* Client encrypts `testfile.txt`, computes hash, and sends RSA-encrypted AES keys via TCP.
+* Client transmits encrypted data using Scapy-generated IP packets.
+* Server receives keys and metadata via TCP, decrypts AES keys, captures IP packets, decrypts data, verifies hash, and saves to `received_file.txt`.
 
-Sunucu (server.py), önce TCP üzerinden anahtar ve boyut bilgilerini alır, ardından IP paketlerini yakalar, AES anahtarını RSA ile çözer, veriyi şifresini çözer ve SHA-256 hash'ini doğrulayarak received_file.txt olarak kaydeder.
+## Limitations and Future Enhancements
 
-Kısıtlamalar ve Geliştirmeler
-MacOS Loopback Arayüzü Sorunları: MacOS loopback arayüzünde IP paketlerinin yakalanması sırasında bazı sorunlar yaşanmıştır; gerçek fiziksel ağ üzerinde çalışma tavsiye edilir.
+* **MacOS Loopback Issues**: IP packet capture issues on loopback; use physical network recommended.
+* **Testing Environment**: Currently untested with Ethernet and VPN environments.
+* **MITM Tests**: Planned but not executed practically.
+* **Future Plans**: GUI development and TCP/UDP hybrid transfers.
 
-Test Ortamı Sınırlamaları: Ethernet ve VPN ortamlarında test gerçekleştirilememiştir; gelecekte farklı ortamlarla test yapılabilir.
+## Screenshots and Files
 
-MITM Atak Testleri: MITM (Man-in-the-Middle) atak testleri teorik olarak planlanmış, ancak pratik uygulama yapılmamıştır.
+Refer to detailed screenshots and files in the project report.
 
-Gelecek Geliştirmeler: İleri aşamalarda bir grafik kullanıcı arayüzü (GUI) ve TCP/UDP hibrit dosya transfer özelliği gibi ek özelliklerin eklenmesi mümkündür.
+* **Experimental Screenshots**:
 
-Ekran Görüntüleri ve Dosyalar
-Proje raporunda detaylı ekran görüntüleri ve oluşturulan dosyalar yer almaktadır:
+  * iPerf3 tests (Wi-Fi, localhost)
+  * Ping RTT tests
+  * Wireshark packet capture analysis
 
-Appendix B: Experimental Screenshots
+* **Generated Files**:
 
-iPerf3 Testi (Wi-Fi Network Link Conditioner altında)
+  * `testfile.txt`: Original data
+  * `server_public.pem`: RSA public key
+  * `received_file.txt`: Verified and successfully received file
 
-iPerf3 Testi (Localhost testi)
+## References
 
-Ping RTT Gecikme Testi (google.com’a yapılan ping testleri)
+* [Scapy Documentation](https://scapy.net/)
+* [Python Cryptography Documentation](https://cryptography.io/)
+* [iPerf3 Documentation](https://iperf.fr/)
+* [Wireshark Documentation](https://wireshark.org/)
+* [Apple Developer Documentation (Network Link Conditioner)](https://developer.apple.com/)
 
-Wireshark Analizi (IP paketi yakalama, MYFILE imzası filtreleme)
+## Author
 
-Wireshark Analizi (Şifreli veri paketleri görünümü)
-
-Appendix C: Generated Files
-
-testfile.txt: Gönderilen orijinal veri.
-
-server_public.pem: Sunucunun RSA açık anahtarı.
-
-received_file.txt: Başarıyla alınan ve doğrulanmış dosya.
-
-Referanslar
-Scapy Documentation
-
-Python Cryptography Documentation
-
-iPerf3 Documentation
-
-Wireshark Documentation
-
-Apple Developer Documentation (Network Link Conditioner)
-
-Yazar
-ZEYNEP SUDE GÜNEŞ
+**Zeynep Sude Güneş**
 22360859055
-BİLGİSAYAR MÜHENDİSLİĞİ - 3.SINIF
-BURSA TEKNİK ÜNİVERSİTESİ
-Mühendislik ve Doğa Bilimleri Fakültesi – Bilgisayar Mühendisliği Bölümü
+Computer Engineering - 3rd Year
+Bursa Technical University, Faculty of Engineering and Natural Sciences
